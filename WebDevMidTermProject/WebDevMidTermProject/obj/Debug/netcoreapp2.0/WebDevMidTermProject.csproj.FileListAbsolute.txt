@@ -1,0 +1,11 @@
+D:\Source\WebDevMidTermProject\WebDevMidTermProject\bin\Debug\netcoreapp2.0\WebDevMidTermProject.deps.json
+D:\Source\WebDevMidTermProject\WebDevMidTermProject\bin\Debug\netcoreapp2.0\WebDevMidTermProject.runtimeconfig.json
+D:\Source\WebDevMidTermProject\WebDevMidTermProject\bin\Debug\netcoreapp2.0\WebDevMidTermProject.runtimeconfig.dev.json
+D:\Source\WebDevMidTermProject\WebDevMidTermProject\bin\Debug\netcoreapp2.0\WebDevMidTermProject.dll
+D:\Source\WebDevMidTermProject\WebDevMidTermProject\bin\Debug\netcoreapp2.0\WebDevMidTermProject.pdb
+D:\Source\WebDevMidTermProject\WebDevMidTermProject\obj\Debug\netcoreapp2.0\WebDevMidTermProject.csprojResolveAssemblyReference.cache
+D:\Source\WebDevMidTermProject\WebDevMidTermProject\obj\Debug\netcoreapp2.0\WebDevMidTermProject.csproj.CoreCompileInputs.cache
+D:\Source\WebDevMidTermProject\WebDevMidTermProject\obj\Debug\netcoreapp2.0\WebDevMidTermProject.AssemblyInfoInputs.cache
+D:\Source\WebDevMidTermProject\WebDevMidTermProject\obj\Debug\netcoreapp2.0\WebDevMidTermProject.AssemblyInfo.cs
+D:\Source\WebDevMidTermProject\WebDevMidTermProject\obj\Debug\netcoreapp2.0\WebDevMidTermProject.dll
+D:\Source\WebDevMidTermProject\WebDevMidTermProject\obj\Debug\netcoreapp2.0\WebDevMidTermProject.pdb

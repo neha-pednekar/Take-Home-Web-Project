@@ -1,0 +1,24 @@
+﻿@model CodeModel
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h2>Welcome to the secret code decoding interface</h2>
+
+@using (Html.BeginForm("CheckFrequencyForm", "Frequency", FormMethod.Post))
+{
+    <div class="form-group">
+        @Html.LabelFor(m => m.InputSecretMessage)
+        @Html.TextBoxFor(m => m.InputSecretMessage, new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.InputSecretMessage)
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.StrategyModel.StrategyType)
+        @Html.DropDownListFor(m => m.StrategyModel.StrategyType, new SelectList(Enum.GetValues(typeof(StrategyTypes))), "", 
+        new { @class = "form-control" })
+        @Html.ValidationMessageFor(m => m.StrategyModel.StrategyType)
+    </div>
+    @Html.AntiForgeryToken()
+    <button type="submit" class="btn btn-primary">Check Frequency for the Entered Code</button>
+}
