@@ -10,6 +10,14 @@ namespace WebDevMidTermProject.Models
         public string InputSecretMessage { get; set; }
 
         public StrategyModel StrategyModel { get; set; }
+
+        public string OutputDecodedMessage { get; set; }
+
+        public string MonogramWithMaxFrequency { get; set; }
+
+        public string BigramWithMaxFrequency { get; set; }
+
+        public string TrigramWithMaxFrequency { get; set; }
     }
 
     public enum StrategyTypes

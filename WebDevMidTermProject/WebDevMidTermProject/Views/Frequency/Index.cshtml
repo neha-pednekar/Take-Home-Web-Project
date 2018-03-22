@@ -10,15 +10,75 @@
 {
     <div class="form-group">
         @Html.LabelFor(m => m.InputSecretMessage)
-        @Html.TextBoxFor(m => m.InputSecretMessage, new { @class = "form-control" })
+        @Html.TextBoxFor(m => m.InputSecretMessage, new { @class = "form-control", @style = "width: 400px" })
         @Html.ValidationMessageFor(m => m.InputSecretMessage)
     </div>
     <div class="form-group">
         @Html.LabelFor(m => m.StrategyModel.StrategyType)
-        @Html.DropDownListFor(m => m.StrategyModel.StrategyType, new SelectList(Enum.GetValues(typeof(StrategyTypes))), "", 
-        new { @class = "form-control" })
+        @Html.DropDownListFor(m => m.StrategyModel.StrategyType, new SelectList(Enum.GetValues(typeof(StrategyTypes))), "",
+                                      new { @class = "form-control" })
         @Html.ValidationMessageFor(m => m.StrategyModel.StrategyType)
     </div>
+    @if (Model != null && !String.IsNullOrWhiteSpace(Model.OutputDecodedMessage))
+    {
+        <div class="form-group">
+            @Html.LabelFor(model => model.OutputDecodedMessage)
+            <p style="word-wrap:break-word">@Model.OutputDecodedMessage</p>
+        </div>
+    }
     @Html.AntiForgeryToken()
     <button type="submit" class="btn btn-primary">Check Frequency for the Entered Code</button>
+    <button type="submit" class="btn btn-primary">Frequency Analysis</button>
+    <button type="submit" class="btn btn-primary">Try Again</button>
+
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+        Launch demo modal
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Character</th>
+                                <th scope="col">Number of Occurences</th>
+                                <th scope="col">Frequency Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @*@foreach (var strategyModel in Model)
+        {
+                    @foreach (var mapping in strategyModel.FrequencyGramMapping)
+{*@
+                    @*<tr>
+                        <td scope="row">@(count++)</td>
+                        <td>@mapping.Key</td>
+                        <td>@mapping.Value %</td>
+                    </tr>*@
+
+@*}
+
+}*@
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
 }
