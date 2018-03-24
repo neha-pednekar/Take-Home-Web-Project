@@ -3,10 +3,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - WebDevMidTermProject</title>
+    <title>@ViewData["Title"] - Magic Decoder</title>
 
     <environment include="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap-darkly.css" />
         <link rel="stylesheet" href="~/css/site.css" />
     </environment>
     <environment exclude="Development">
@@ -26,12 +26,12 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">WebDevMidTermProject</a>
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Magic Decoder</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Frequency" asp-action="Index">Cipher Box</a></li>
+                    <li><a asp-area="" asp-controller="Frequency" asp-action="Index">Magic Box</a></li>
                     <li><a asp-area="" asp-controller="Frequency" asp-action="MonogramTableView">Monogram Frequency Table</a></li>
                     <li><a asp-area="" asp-controller="Frequency" asp-action="BigramTableView">Bigram Frequency Table</a></li>
                     <li><a asp-area="" asp-controller="Frequency" asp-action="TrigramTableView">Trigram Frequency Table</a></li>
@@ -43,7 +43,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2018 - WebDevMidTermProject</p>
+            <p>&copy; 2018 - Magic Decoder</p>
         </footer>
     </div>
 

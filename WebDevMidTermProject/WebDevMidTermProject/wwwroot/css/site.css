@@ -34,5 +34,16 @@
     }
 }
 
+.jumbotron{
+    background-image: url('../images/secret_code_wallpaper.jpg')
+}
+
+.jumbotron-fluid {
+    background-image: url('../images/secret_code_wallpaper.jpg')
+}
+
+
+
+
 
 

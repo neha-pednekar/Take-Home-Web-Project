@@ -2,12 +2,19 @@
 
 @{
     ViewData["Title"] = "Home Page";
+    var count = 1;
 }
-
+<br />
 <h2>Welcome to the secret code decoding interface</h2>
+<br />
 
 @using (Html.BeginForm("CheckFrequencyForm", "Frequency", FormMethod.Post))
 {
+    if (Model != null)
+    {
+        @Html.HiddenFor(m => m.MonogramsAlreadyOccupied, Model.MonogramsAlreadyOccupied)
+    }
+
     <div class="form-group">
         @Html.LabelFor(m => m.InputSecretMessage)
         @Html.TextBoxFor(m => m.InputSecretMessage, new { @class = "form-control", @style = "width: 400px" })
@@ -16,24 +23,26 @@
     <div class="form-group">
         @Html.LabelFor(m => m.StrategyModel.StrategyType)
         @Html.DropDownListFor(m => m.StrategyModel.StrategyType, new SelectList(Enum.GetValues(typeof(StrategyTypes))), "",
-                                      new { @class = "form-control" })
+                                                               new { @class = "form-control", @style = "width: 400px" })
         @Html.ValidationMessageFor(m => m.StrategyModel.StrategyType)
     </div>
+    <br />
     @if (Model != null && !String.IsNullOrWhiteSpace(Model.OutputDecodedMessage))
     {
         <div class="form-group">
             @Html.LabelFor(model => model.OutputDecodedMessage)
-            <p style="word-wrap:break-word">@Model.OutputDecodedMessage</p>
+            <p style="color:#3498db; word-wrap:break-word">@Model.OutputDecodedMessage</p>
         </div>
     }
+    <br />
+    <br />
     @Html.AntiForgeryToken()
     <button type="submit" class="btn btn-primary">Check Frequency for the Entered Code</button>
-    <button type="submit" class="btn btn-primary">Frequency Analysis</button>
-    <button type="submit" class="btn btn-primary">Try Again</button>
-
+    <br />
+    <br />
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
-        Launch demo modal
+        Frequency Analysis
     </button>
 
     <!-- Modal -->
@@ -57,26 +66,26 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @*@foreach (var strategyModel in Model)
-        {
-                    @foreach (var mapping in strategyModel.FrequencyGramMapping)
-{*@
-                    @*<tr>
-                        <td scope="row">@(count++)</td>
-                        <td>@mapping.Key</td>
-                        <td>@mapping.Value %</td>
-                    </tr>*@
 
-@*}
+                            @if (ViewData["MonogramDataModels"] != null)
+                            {
+                                @foreach (var monogramData in ViewData["MonogramDataModels"] as IList<MonogramDataModel>)
+                                {
+                                    <tr>
+                                        <td scope="row">@(count++)</td>
+                                        <td>@monogramData.Character/td>
+                                        <td>@monogramData.Occupied</td>
+                                    </tr>
 
-}*@
+                                }
+                            }
+
 
                         </tbody>
                     </table>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
                 </div>
             </div>
         </div>

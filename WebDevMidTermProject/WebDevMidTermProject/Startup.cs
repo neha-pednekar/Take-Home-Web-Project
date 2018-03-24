@@ -22,6 +22,10 @@ namespace WebDevMidTermProject
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+
+            services.AddSession(options => {
+                options.IdleTimeout = TimeSpan.FromMinutes(60);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -37,6 +41,9 @@ namespace WebDevMidTermProject
                 app.UseExceptionHandler("/Home/Error");
             }
 
+
+            app.UseSession();
+
             app.UseStaticFiles();
 
             app.UseMvc(routes =>
@@ -45,6 +52,7 @@ namespace WebDevMidTermProject
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+
         }
     }
 }

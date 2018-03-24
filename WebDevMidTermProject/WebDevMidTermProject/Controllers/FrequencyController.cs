@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using WebDevMidTermProject.Models;
 
@@ -36,7 +37,20 @@ namespace WebDevMidTermProject.Controllers
                 }
                 else if(_strategy[0].StrategyType == "Trigram")
                 {
+                    if(codeModel.InputSecretMessage.Contains(" "))
+                    {
+                        codeModel = TrigramDecodingForStringWithSpaces(codeModel, _strategy);
+                    }
+                    else
+                    {
+                        codeModel = TrigramDecoding(codeModel, _strategy);
+                    }
+                }
+                else if(_strategy[0].StrategyType == "Monogram and Bigram and Trigram")
+                {
                     codeModel = TrigramDecoding(codeModel, _strategy);
+                    codeModel = BigramDecoding(codeModel, _strategy);
+                    codeModel = MonogramDecoding(codeModel, _strategy);
                 }
 
               
@@ -52,17 +66,18 @@ namespace WebDevMidTermProject.Controllers
 
             int totalNumberOfLetters = codeModel.InputSecretMessage.Count();
 
-            var frequencyDataMonograms = codeModel.InputSecretMessage
+            List<MonogramDataModel> frequencyDataMonograms = codeModel.InputSecretMessage
                                        .GroupBy(x => x)
-                                       .Select(x => new
+                                       .Select(x => new MonogramDataModel
                                        {
                                            Character = x.Key,
-                                           NoOfAppearances = x.Count(),
+                                           NumberOfOccurences = x.Count(),
                                            Occupied = false,
                                            Percentage = Math.Round(((double)x.Count() / totalNumberOfLetters) * 100, 2)
                                        })
                                        .OrderByDescending(x => x.Percentage)
                                        .ToList();
+           
 
             var monogramsWithMaxFreq = codeModel.InputSecretMessage
                                                 .GroupBy(p => p)
@@ -77,8 +92,36 @@ namespace WebDevMidTermProject.Controllers
                 .FrequencyGramMapping
                 .OrderByDescending(x => x.Value);
 
+            IList<MonogramDataModel> standardFreqDataMonograms = strategyModel.ElementAt(0).FrequencyGramMapping
+                                       .GroupBy(x => x)
+                                       .Select(x => new MonogramDataModel
+                                       {
+                                           Character = Convert.ToChar(x.Key.Key),
+                                           NumberOfOccurences = x.Count(),
+                                           Occupied = false,
+                                           Percentage = x.Key.Value
+                                       })
+                                       .OrderByDescending(x => x.Percentage)
+                                       .ToList();
+
+            
             codeModel.OutputDecodedMessage = codeModel.InputSecretMessage
                 .Replace(monogramsWithMaxFreq.FirstOrDefault(), Convert.ToChar(orderedStrategicDictionary.FirstOrDefault().Key));
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append(orderedStrategicDictionary.FirstOrDefault().Key.Trim());
+            sb.Append(" ,");
+            codeModel.MonogramsAlreadyOccupied = sb.ToString();
+
+            foreach (MonogramDataModel monogramDataModel in standardFreqDataMonograms)
+            {
+                if (orderedStrategicDictionary.FirstOrDefault().Key.Trim().Equals(monogramDataModel.Character))
+                {
+                    monogramDataModel.Occupied = true;
+                }
+            }
+
+            ViewData["MonogramDataModels"] = standardFreqDataMonograms; 
 
             #endregion
 
@@ -118,9 +161,22 @@ namespace WebDevMidTermProject.Controllers
                 bigramCombinations[partial]++;
             }
 
+            int totalNumberOfBigrams = bigramCombinations.Count();
+
 
             bigramCombinations = bigramCombinations.Where(i => i.Value > 0)
                      .ToDictionary(i => i.Key, i => i.Value);
+
+            List<BigramDataModel> frequencyDataBigrams = bigramCombinations
+                                       .Select(x => new BigramDataModel
+                                       {
+                                           BigramSequence = x.Key,
+                                           NumberOfOccurences = x.Value,
+                                           Occupied = false,
+                                           Percentage = Math.Round(((double)x.Value / totalNumberOfBigrams) * 100, 2)
+                                       })
+                                       .OrderByDescending(x => x.Percentage)
+                                       .ToList();
 
             var bigramsWithMaxFreq = bigramCombinations
                 .FirstOrDefault(x => x.Value == bigramCombinations.Values.Max())
@@ -138,10 +194,12 @@ namespace WebDevMidTermProject.Controllers
         {
             #region Trigram Substitution
 
+            //Use OrderBy(and not Order By Descending) as we are retrieving the trigram according to the rank and not percentage.
+            //Therefore, the trigram with minimum rank i.e 1 will have the highest freq
             var orderedStrategyInnerDictionaryTrigram = strategyModel
                 .ElementAt(0)
                 .FrequencyGramMapping
-                .OrderByDescending(x => x.Value);
+                .OrderBy(x => x.Value);
 
 
             char[] alphabetTri = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
@@ -157,28 +215,133 @@ namespace WebDevMidTermProject.Controllers
             foreach (var trigram in trigrams)
             {
                 // do something
-                if (!trigramCombinations.ContainsKey(alphabetTri[trigram.I] + alphabetTri[trigram.J] + alphabetTri[trigram.K].ToString()))
-                    trigramCombinations.Add(alphabetTri[trigram.I] + alphabetTri[trigram.J] + alphabetTri[trigram.K].ToString(), 0);
+                if (!trigramCombinations.ContainsKey((alphabetTri[trigram.I] + alphabetTri[trigram.J].ToString()) + alphabetTri[trigram.K].ToString()))
+                    trigramCombinations.Add((alphabetTri[trigram.I] + alphabetTri[trigram.J].ToString()) + alphabetTri[trigram.K].ToString(), 0);
             }
 
+            codeModel.InputSecretMessage = codeModel.InputSecretMessage.Replace(" ", "");
 
             char[] textCharArrayTri = codeModel.InputSecretMessage.ToCharArray();
             for (int i = 0; i < codeModel.InputSecretMessage.Length - 2; i++)
             {
-                string partial = textCharArrayTri[i] + textCharArrayTri[i + 1] + textCharArrayTri[i + 2].ToString();
-                trigramCombinations[partial]++;
+                string partial = (textCharArrayTri[i] + textCharArrayTri[i + 1].ToString()) + textCharArrayTri[i + 2].ToString();
+                if(trigramCombinations.ContainsKey(partial))
+                {
+                    trigramCombinations[partial]++;
+                }
+                
             }
+
+            int totalNumberOfTrigrams = trigramCombinations.Count();
 
 
             trigramCombinations = trigramCombinations.Where(i => i.Value > 0)
                      .ToDictionary(i => i.Key, i => i.Value);
+
+            List<TrigramDataModel> frequencyDataTrigrams = trigramCombinations
+                                       .Select(x => new TrigramDataModel
+                                       {
+                                           TrigramSequence = x.Key,
+                                           NumberOfOccurences = x.Value,
+                                           Occupied = false,
+                                           Percentage = Math.Round(((double)x.Value / totalNumberOfTrigrams) * 100, 2)
+                                       })
+                                       .OrderByDescending(x => x.Percentage)
+                                       .ToList();
+
 
             var trigramsWithMaxFreq = trigramCombinations
                 .FirstOrDefault(x => x.Value == trigramCombinations.Values.Max())
                 .Key;
 
             codeModel.OutputDecodedMessage = codeModel.InputSecretMessage
-                .Replace(trigramsWithMaxFreq.FirstOrDefault(), Convert.ToChar(orderedStrategyInnerDictionaryTrigram.FirstOrDefault().Key));
+                .Replace(trigramsWithMaxFreq, orderedStrategyInnerDictionaryTrigram.FirstOrDefault().Key);
+
+            for(int i = 0; i < 3; i++)
+            {
+                codeModel.OutputDecodedMessage = codeModel.OutputDecodedMessage
+                .Replace(trigramsWithMaxFreq.ToCharArray()[i], orderedStrategyInnerDictionaryTrigram.FirstOrDefault().Key.ToCharArray()[i]);
+            }
+            
+
+
+            #endregion
+
+            return codeModel;
+        }
+
+        private CodeModel TrigramDecodingForStringWithSpaces(CodeModel codeModel, List<StrategyModel> strategyModel)
+        {
+            #region Trigram Substitution
+
+            //Use OrderBy(and not Order By Descending) as we are retrieving the trigram according to the rank and not percentage.
+            //Therefore, the trigram with minimum rank i.e 1 will have the highest freq
+            var orderedStrategyInnerDictionaryTrigram = strategyModel
+                .ElementAt(0)
+                .FrequencyGramMapping
+                .OrderBy(x => x.Value);
+
+
+            char[] alphabetTri = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
+            Dictionary<string, int> trigramCombinations = new Dictionary<string, int>();
+
+
+            var trigrams = from I in Enumerable.Range(0, 26)
+                           from J in Enumerable.Range(0, 26)
+                           from K in Enumerable.Range(0, 26)
+                           select new { I, J, K };
+
+
+            foreach (var trigram in trigrams)
+            {
+                // do something
+                if (!trigramCombinations.ContainsKey((alphabetTri[trigram.I] + alphabetTri[trigram.J].ToString()) + alphabetTri[trigram.K].ToString()))
+                    trigramCombinations.Add((alphabetTri[trigram.I] + alphabetTri[trigram.J].ToString()) + alphabetTri[trigram.K].ToString(), 0);
+            }
+
+            codeModel.InputSecretMessage = codeModel.InputSecretMessage.Replace(" ", "");
+
+            char[] textCharArrayTri = codeModel.InputSecretMessage.ToCharArray();
+            for (int i = 0; i < codeModel.InputSecretMessage.Length - 2; i++)
+            {
+                string partial = (textCharArrayTri[i] + textCharArrayTri[i + 1].ToString()) + textCharArrayTri[i + 2].ToString();
+                if (trigramCombinations.ContainsKey(partial))
+                {
+                    trigramCombinations[partial]++;
+                }
+
+            }
+
+            int totalNumberOfTrigrams = trigramCombinations.Count();
+
+
+            trigramCombinations = trigramCombinations.Where(i => i.Value > 0)
+                     .ToDictionary(i => i.Key, i => i.Value);
+
+            List<TrigramDataModel> frequencyDataTrigrams = trigramCombinations
+                                       .Select(x => new TrigramDataModel
+                                       {
+                                           TrigramSequence = x.Key,
+                                           NumberOfOccurences = x.Value,
+                                           Occupied = false,
+                                           Percentage = Math.Round(((double)x.Value / totalNumberOfTrigrams) * 100, 2)
+                                       })
+                                       .OrderByDescending(x => x.Percentage)
+                                       .ToList();
+
+
+            var trigramsWithMaxFreq = trigramCombinations
+                .FirstOrDefault(x => x.Value == trigramCombinations.Values.Max())
+                .Key;
+
+            codeModel.OutputDecodedMessage = codeModel.InputSecretMessage
+                .Replace(trigramsWithMaxFreq, orderedStrategyInnerDictionaryTrigram.FirstOrDefault().Key);
+
+            for (int i = 0; i < 3; i++)
+            {
+                codeModel.OutputDecodedMessage = codeModel.OutputDecodedMessage
+                .Replace(trigramsWithMaxFreq.ToCharArray()[i], orderedStrategyInnerDictionaryTrigram.FirstOrDefault().Key.ToCharArray()[i]);
+            }
 
 
 
