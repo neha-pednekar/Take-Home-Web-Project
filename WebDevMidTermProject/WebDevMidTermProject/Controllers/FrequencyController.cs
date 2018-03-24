@@ -185,6 +185,12 @@ namespace WebDevMidTermProject.Controllers
             codeModel.OutputDecodedMessage = codeModel.InputSecretMessage
                 .Replace(bigramsWithMaxFreq, orderedStrategyInnerDictionary.FirstOrDefault().Key);
 
+            for (int i = 0; i < 2; i++)
+            {
+                codeModel.OutputDecodedMessage = codeModel.OutputDecodedMessage
+                .Replace(bigramsWithMaxFreq.ToCharArray()[i], orderedStrategyInnerDictionary.FirstOrDefault().Key.ToCharArray()[i]);
+            }
+
             #endregion
 
             return codeModel;
