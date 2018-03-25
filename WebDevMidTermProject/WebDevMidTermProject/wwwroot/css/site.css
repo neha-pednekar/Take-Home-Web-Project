@@ -42,7 +42,9 @@
     background-image: url('../images/secret_code_wallpaper.jpg')
 }
 
-
+.error{
+    color: red;
+}
 
 
 

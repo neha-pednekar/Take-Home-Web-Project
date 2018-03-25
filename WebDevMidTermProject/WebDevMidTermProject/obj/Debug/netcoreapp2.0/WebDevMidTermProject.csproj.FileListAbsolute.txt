@@ -14,9 +14,9 @@ D:\Take Home Web Project\Take-Home-Web-Project\WebDevMidTermProject\WebDevMidTer
 D:\Take Home Web Project\Take-Home-Web-Project\WebDevMidTermProject\WebDevMidTermProject\bin\Debug\netcoreapp2.0\WebDevMidTermProject.runtimeconfig.dev.json
 D:\Take Home Web Project\Take-Home-Web-Project\WebDevMidTermProject\WebDevMidTermProject\bin\Debug\netcoreapp2.0\WebDevMidTermProject.dll
 D:\Take Home Web Project\Take-Home-Web-Project\WebDevMidTermProject\WebDevMidTermProject\bin\Debug\netcoreapp2.0\WebDevMidTermProject.pdb
-D:\Take Home Web Project\Take-Home-Web-Project\WebDevMidTermProject\WebDevMidTermProject\obj\Debug\netcoreapp2.0\WebDevMidTermProject.csprojResolveAssemblyReference.cache
 D:\Take Home Web Project\Take-Home-Web-Project\WebDevMidTermProject\WebDevMidTermProject\obj\Debug\netcoreapp2.0\WebDevMidTermProject.csproj.CoreCompileInputs.cache
 D:\Take Home Web Project\Take-Home-Web-Project\WebDevMidTermProject\WebDevMidTermProject\obj\Debug\netcoreapp2.0\WebDevMidTermProject.AssemblyInfoInputs.cache
 D:\Take Home Web Project\Take-Home-Web-Project\WebDevMidTermProject\WebDevMidTermProject\obj\Debug\netcoreapp2.0\WebDevMidTermProject.AssemblyInfo.cs
 D:\Take Home Web Project\Take-Home-Web-Project\WebDevMidTermProject\WebDevMidTermProject\obj\Debug\netcoreapp2.0\WebDevMidTermProject.dll
 D:\Take Home Web Project\Take-Home-Web-Project\WebDevMidTermProject\WebDevMidTermProject\obj\Debug\netcoreapp2.0\WebDevMidTermProject.pdb
+D:\Take Home Web Project\Take-Home-Web-Project\WebDevMidTermProject\WebDevMidTermProject\obj\Debug\netcoreapp2.0\WebDevMidTermProject.csprojResolveAssemblyReference.cache

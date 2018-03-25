@@ -4,11 +4,13 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using WebDevMidTermProject.Custom_Validations;
 
 namespace WebDevMidTermProject.Models
 {
     public class CodeModel
     {
+        [Required]
         [Display(Name = "Enter a secret message to decode")]
         public string InputSecretMessage { get; set; }
 
@@ -26,8 +28,14 @@ namespace WebDevMidTermProject.Models
         public string MonogramsAlreadyOccupied { get; set; }
 
         public string BigramsAlreadyOccupied { get; set; }
-
+        
         public string TrigramsAlreadyOccupied { get; set; }
+
+        [ValidateWSCheckbox]
+        public bool DoesTheStringHaveWhitespaces { get; set; }
+
+        [ValidateSpecialCharCheckbox]
+        public bool DoesTheStringHaveSpecialCharacters { get; set; }
 
         public List<MonogramDataModel> MonogramDataModels { get; set; }
 
@@ -40,11 +48,14 @@ namespace WebDevMidTermProject.Models
     public enum StrategyTypes
     {
         [Display(Name = "Monogram")]
-        Monogram = 0,
+        Monogram,
         [Display(Name = "Bigram(Monogram and Bigram Both Covered)")]
-        Bigram = 1,
+        Bigram,
         [Display(Name = "Trigram(Monogram and Trigram Both Covered)")]
-        Trigram = 2
+        Trigram
+        //ParagraphWithSpacing,
+        //StringWithSpecialCharacters
+        
     }
 
 }

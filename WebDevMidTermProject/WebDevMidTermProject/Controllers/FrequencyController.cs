@@ -21,39 +21,45 @@ namespace WebDevMidTermProject.Controllers
         [HttpPost]
         public IActionResult CheckFrequencyForm(CodeModel codeModel)
         {
-            StrategyManager _sm = new StrategyManager();
-            List<StrategyModel> _strategy = _sm.GetStrategyByStrategyType(codeModel.StrategyModel.StrategyType);
-
-            if(_strategy != null && _strategy.Count > 0 && 
-                !String.IsNullOrWhiteSpace(codeModel.InputSecretMessage))
+            if (ModelState.IsValid)
             {
-                if(_strategy[0].StrategyType == "Monogram")
+                StrategyManager _sm = new StrategyManager();
+                List<StrategyModel> _strategy = _sm.GetStrategyByStrategyType(codeModel.StrategyModel.StrategyType);
+
+                if (_strategy != null && _strategy.Count > 0 &&
+                    !String.IsNullOrWhiteSpace(codeModel.InputSecretMessage))
                 {
-                    codeModel = MonogramDecoding(codeModel, _strategy);
-                }
-                else if(_strategy[0].StrategyType == "Bigram")
-                {
-                    codeModel = BigramDecoding(codeModel, _strategy);
-                }
-                else if(_strategy[0].StrategyType == "Trigram")
-                {
-                    if(codeModel.InputSecretMessage.Contains(" "))
+                    Regex RgxUrl = new Regex("[^a-z0-9]");
+                    bool blnContainsSpecialCharacters = RgxUrl.IsMatch(codeModel.InputSecretMessage);
+                    if (codeModel.InputSecretMessage.Contains(" ") &&
+                        blnContainsSpecialCharacters
+                        && codeModel.DoesTheStringHaveWhitespaces == true)
                     {
-                        codeModel = TrigramDecodingForStringWithSpaces(codeModel, _strategy);
+                        codeModel = DecoderForParagraphWithSpaces(codeModel, _strategy);
+                        //if(String.IsNullOrWhiteSpace(codeModel.OutputDecodedMessage))
+                        //{ }
                     }
+                    //else if (blnContainsSpecialCharacters && codeModel.StrategyModel.StrategyType == "StringWithSpecialCharacters")
+                    //{
+                    //    codeModel = DecoderForParagraphWithSpecialCharacters(codeModel, _strategy);
+                    //}
                     else
                     {
-                        codeModel = TrigramDecoding(codeModel, _strategy);
+                        if (_strategy[0].StrategyType == "Monogram")
+                        {
+                            codeModel = MonogramDecoding(codeModel, _strategy);
+                        }
+                        else if (_strategy[0].StrategyType == "Bigram")
+                        {
+                            codeModel = BigramDecoding(codeModel, _strategy);
+                        }
+                        else if (_strategy[0].StrategyType == "Trigram")
+                        {
+                            codeModel = TrigramDecoding(codeModel, _strategy);
+                        }
                     }
-                }
-                else if(_strategy[0].StrategyType == "Monogram and Bigram and Trigram")
-                {
-                    codeModel = TrigramDecoding(codeModel, _strategy);
-                    codeModel = BigramDecoding(codeModel, _strategy);
-                    codeModel = MonogramDecoding(codeModel, _strategy);
-                }
 
-              
+                }
             }
 
             return View("Index",codeModel);
@@ -113,15 +119,7 @@ namespace WebDevMidTermProject.Controllers
             sb.Append(" ,");
             codeModel.MonogramsAlreadyOccupied = sb.ToString();
 
-            foreach (MonogramDataModel monogramDataModel in standardFreqDataMonograms)
-            {
-                if (orderedStrategicDictionary.FirstOrDefault().Key.Trim().Equals(monogramDataModel.Character))
-                {
-                    monogramDataModel.Occupied = true;
-                }
-            }
-
-            ViewData["MonogramDataModels"] = standardFreqDataMonograms; 
+            ViewData["MonogramTableView"] = frequencyDataMonograms; 
 
             #endregion
 
@@ -190,6 +188,8 @@ namespace WebDevMidTermProject.Controllers
                 codeModel.OutputDecodedMessage = codeModel.OutputDecodedMessage
                 .Replace(bigramsWithMaxFreq.ToCharArray()[i], orderedStrategyInnerDictionary.FirstOrDefault().Key.ToCharArray()[i]);
             }
+
+            ViewData["BigramTableView"] = frequencyDataBigrams;
 
             #endregion
 
@@ -268,94 +268,96 @@ namespace WebDevMidTermProject.Controllers
                 codeModel.OutputDecodedMessage = codeModel.OutputDecodedMessage
                 .Replace(trigramsWithMaxFreq.ToCharArray()[i], orderedStrategyInnerDictionaryTrigram.FirstOrDefault().Key.ToCharArray()[i]);
             }
-            
 
+            ViewData["TrigramTableView"] = frequencyDataTrigrams;
 
             #endregion
 
             return codeModel;
         }
 
-        private CodeModel TrigramDecodingForStringWithSpaces(CodeModel codeModel, List<StrategyModel> strategyModel)
+        private CodeModel DecoderForParagraphWithSpaces(CodeModel codeModel, List<StrategyModel> strategyModel)
         {
-            #region Trigram Substitution
+            var words = codeModel.InputSecretMessage.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            var groups = words.GroupBy(w => w);
 
-            //Use OrderBy(and not Order By Descending) as we are retrieving the trigram according to the rank and not percentage.
-            //Therefore, the trigram with minimum rank i.e 1 will have the highest freq
-            var orderedStrategyInnerDictionaryTrigram = strategyModel
-                .ElementAt(0)
-                .FrequencyGramMapping
-                .OrderBy(x => x.Value);
-
-
-            char[] alphabetTri = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".ToCharArray();
-            Dictionary<string, int> trigramCombinations = new Dictionary<string, int>();
-
-
-            var trigrams = from I in Enumerable.Range(0, 26)
-                           from J in Enumerable.Range(0, 26)
-                           from K in Enumerable.Range(0, 26)
-                           select new { I, J, K };
-
-
-            foreach (var trigram in trigrams)
+            if(codeModel.StrategyModel.StrategyType == "Monogram")
             {
-                // do something
-                if (!trigramCombinations.ContainsKey((alphabetTri[trigram.I] + alphabetTri[trigram.J].ToString()) + alphabetTri[trigram.K].ToString()))
-                    trigramCombinations.Add((alphabetTri[trigram.I] + alphabetTri[trigram.J].ToString()) + alphabetTri[trigram.K].ToString(), 0);
-            }
+                var singleLetterAlphabets = groups.Where(g => g.Key.Length == 1).Select(g => g).OrderByDescending(m => m.Count());
 
-            codeModel.InputSecretMessage = codeModel.InputSecretMessage.Replace(" ", "");
-
-            char[] textCharArrayTri = codeModel.InputSecretMessage.ToCharArray();
-            for (int i = 0; i < codeModel.InputSecretMessage.Length - 2; i++)
-            {
-                string partial = (textCharArrayTri[i] + textCharArrayTri[i + 1].ToString()) + textCharArrayTri[i + 2].ToString();
-                if (trigramCombinations.ContainsKey(partial))
+                if (singleLetterAlphabets.Count() > 0)
                 {
-                    trigramCombinations[partial]++;
+                    var mostFrequentlyOccuringAlphabet = singleLetterAlphabets.FirstOrDefault();
+
+                    var orderedStrategyInnerDictionaryMonogram = strategyModel
+                        .ElementAt(0)
+                        .FrequencyGramMapping
+                        .OrderBy(x => x.Value);
+
+                    codeModel.OutputDecodedMessage = codeModel.InputSecretMessage
+                        .Replace(mostFrequentlyOccuringAlphabet.Key, orderedStrategyInnerDictionaryMonogram.FirstOrDefault().Key);
                 }
-
+                
             }
-
-            int totalNumberOfTrigrams = trigramCombinations.Count();
-
-
-            trigramCombinations = trigramCombinations.Where(i => i.Value > 0)
-                     .ToDictionary(i => i.Key, i => i.Value);
-
-            List<TrigramDataModel> frequencyDataTrigrams = trigramCombinations
-                                       .Select(x => new TrigramDataModel
-                                       {
-                                           TrigramSequence = x.Key,
-                                           NumberOfOccurences = x.Value,
-                                           Occupied = false,
-                                           Percentage = Math.Round(((double)x.Value / totalNumberOfTrigrams) * 100, 2)
-                                       })
-                                       .OrderByDescending(x => x.Percentage)
-                                       .ToList();
-
-
-            var trigramsWithMaxFreq = trigramCombinations
-                .FirstOrDefault(x => x.Value == trigramCombinations.Values.Max())
-                .Key;
-
-            codeModel.OutputDecodedMessage = codeModel.InputSecretMessage
-                .Replace(trigramsWithMaxFreq, orderedStrategyInnerDictionaryTrigram.FirstOrDefault().Key);
-
-            for (int i = 0; i < 3; i++)
+            else if(codeModel.StrategyModel.StrategyType == "Bigram")
             {
-                codeModel.OutputDecodedMessage = codeModel.OutputDecodedMessage
-                .Replace(trigramsWithMaxFreq.ToCharArray()[i], orderedStrategyInnerDictionaryTrigram.FirstOrDefault().Key.ToCharArray()[i]);
+                var twoLetterWords = groups.Where(g => g.Key.Length == 2).Select(g => g).OrderByDescending(m => m.Count());
+
+                if (twoLetterWords.Count() > 0)
+                {
+                    var mostFrequentlyOccuringBigram = twoLetterWords.FirstOrDefault();
+
+                    var orderedStrategyInnerDictionaryBigram = strategyModel
+                        .ElementAt(0)
+                        .FrequencyGramMapping
+                        .OrderBy(x => x.Value);
+
+                    //codeModel.OutputDecodedMessage = codeModel.InputSecretMessage
+                    //    .Replace(mostFrequentlyOccuringBigram.Key, orderedStrategyInnerDictionaryBigram.FirstOrDefault().Key);
+
+                    codeModel.OutputDecodedMessage = codeModel.InputSecretMessage;
+                    //    .Replace(mostFrequentlyOccuringTrigram.Key, orderedStrategyInnerDictionaryTrigram.FirstOrDefault().Key);
+
+                    for (int i = 0; i < 2; i++)
+                    {
+                        codeModel.OutputDecodedMessage = codeModel.OutputDecodedMessage
+                        .Replace(mostFrequentlyOccuringBigram.Key.ToCharArray()[i],
+                        orderedStrategyInnerDictionaryBigram.FirstOrDefault().Key.ToCharArray()[i]);
+                    }
+                }
             }
+            else if(codeModel.StrategyModel.StrategyType == "Trigram")
+            {
+                var threeLetterWords = groups.Where(g => g.Key.Length == 3).Select(g => g).OrderByDescending(m => m.Count());
 
+                if (threeLetterWords.Count() > 0)
+                {
+                    var mostFrequentlyOccuringTrigram = threeLetterWords.FirstOrDefault();
 
+                    var orderedStrategyInnerDictionaryTrigram = strategyModel
+                        .ElementAt(0)
+                        .FrequencyGramMapping
+                        .OrderBy(x => x.Value);
 
-            #endregion
+                    codeModel.OutputDecodedMessage = codeModel.InputSecretMessage;
+                    //    .Replace(mostFrequentlyOccuringTrigram.Key, orderedStrategyInnerDictionaryTrigram.FirstOrDefault().Key);
+
+                    for(int i = 0; i < 3; i++)
+                    {
+                        codeModel.OutputDecodedMessage = codeModel.OutputDecodedMessage
+                        .Replace(mostFrequentlyOccuringTrigram.Key.ToCharArray()[i], 
+                        orderedStrategyInnerDictionaryTrigram.FirstOrDefault().Key.ToCharArray()[i]);
+                    }
+                }
+            }
 
             return codeModel;
         }
 
+        private CodeModel DecoderForParagraphWithSpecialCharacters(CodeModel codeModel, List<StrategyModel> strategyModel)
+        {
+            return codeModel;
+        }
 
         public IActionResult MonogramTableView()
         {

@@ -8,7 +8,7 @@
 <h2>Welcome to the secret code decoding interface</h2>
 <br />
 
-@using (Html.BeginForm("CheckFrequencyForm", "Frequency", FormMethod.Post))
+@using (Html.BeginForm("CheckFrequencyForm", "Frequency", FormMethod.Post, new{@id = "freqForm",@name = "freqForm" }))
 {
     if (Model != null)
     {
@@ -23,8 +23,18 @@
     <div class="form-group">
         @Html.LabelFor(m => m.StrategyModel.StrategyType)
         @Html.DropDownListFor(m => m.StrategyModel.StrategyType, new SelectList(Enum.GetValues(typeof(StrategyTypes))), "",
-                                                               new { @class = "form-control", @style = "width: 400px" })
-        @Html.ValidationMessageFor(m => m.StrategyModel.StrategyType)
+                                                                              new { @class = "form-control", @style = "width: 400px" })
+        @Html.ValidationMessageFor(m => m.StrategyModel.StrategyType, "Please select a Strategy Type" , new { @style = "color:red"})
+    </div>
+    <div class="form-group">
+        @Html.CheckBoxFor(m => m.DoesTheStringHaveWhitespaces, new { @class = "form-control", @id = "mychkbox1" })
+        <label class="form-check-label" for="DoesTheStringHaveWhitespaces">Does the string have whitespaces?</label>
+        @Html.ValidationMessageFor(m => m.DoesTheStringHaveWhitespaces, "", new { @style = "color:red" })
+    </div>
+    <div class="form-group">
+        @Html.CheckBoxFor(m => m.DoesTheStringHaveSpecialCharacters, new { @class = "form-control", @id = "mychkbox2" })
+        <label class="form-check-label" for="DoesTheStringHaveSpecialCharacters">Does the string have special characters?</label>
+        @Html.ValidationMessageFor(m => m.DoesTheStringHaveSpecialCharacters,"", new { @style = "color:red" })
     </div>
     <br />
     @if (Model != null && !String.IsNullOrWhiteSpace(Model.OutputDecodedMessage))
@@ -67,18 +77,47 @@
                         </thead>
                         <tbody>
 
-                            @if (ViewData["MonogramDataModels"] != null)
-                            {
-                                @foreach (var monogramData in ViewData["MonogramDataModels"] as IList<MonogramDataModel>)
-                                {
-                                    <tr>
-                                        <td scope="row">@(count++)</td>
-                                        <td>@monogramData.Character/td>
-                                        <td>@monogramData.Occupied</td>
-                                    </tr>
+                            @if (ViewData["MonogramTableView"] != null)
+    {
+                        @foreach (var monogramData in ViewData["MonogramTableView"] as IList<MonogramDataModel>)
+{
+                        <tr>
+                            <td scope="row">@(count++)</td>
+                            <td>@monogramData.Character</td>
+                            <td>@monogramData.NumberOfOccurences</td>
+                            <td>@monogramData.Percentage</td>
+                        </tr>
 
-                                }
-                            }
+}
+}
+
+                            @if (ViewData["BigramTableView"] != null)
+    {
+                        @foreach (var bigramData in ViewData["BigramTableView"] as IList<BigramDataModel>)
+{
+                        <tr>
+                            <td scope="row">@(count++)</td>
+                            <td>@bigramData.BigramSequence/td>
+                            <td>@bigramData.NumberOfOccurences</td>
+                            <td>@bigramData.Percentage</td>
+                        </tr>
+
+}
+}
+
+                            @if (ViewData["TrigramTableView"] != null)
+    {
+                        @foreach (var trigramData in ViewData["TrigramTableView"] as IList<TrigramDataModel>)
+{
+                        <tr>
+                            <td scope="row">@(count++)</td>
+                            <td>@trigramData.TrigramSequence/td>
+                            <td>@trigramData.NumberOfOccurences</td>
+                            <td>@trigramData.Percentage</td>
+                        </tr>
+
+}
+}
 
 
                         </tbody>

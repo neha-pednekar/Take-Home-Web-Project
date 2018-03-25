@@ -47,6 +47,16 @@ namespace WebDevMidTermProject.Models
                     { "nde", 9 },{ "has", 10 },{ "nce", 11 }, { "edt", 12},
                     { "tis", 13 },{ "oft", 14 },{ "sth", 15 }, { "men", 16}
                     }
+            },
+            new StrategyModel
+            {
+                StrategyType = "ParagraphWithSpacing",
+                FrequencyGramMapping = null
+            },
+            new StrategyModel
+            {
+                StrategyType = "StringWithSpecialCharacters",
+                FrequencyGramMapping = null
             }
 
         };

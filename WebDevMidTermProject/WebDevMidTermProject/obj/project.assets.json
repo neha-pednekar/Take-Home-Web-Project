@@ -19,6 +19,12 @@
       "jQuery/3.0.0": {
         "type": "package"
       },
+      "jQuery.Validation/1.17.0": {
+        "type": "package",
+        "dependencies": {
+          "jQuery": "1.4.4"
+        }
+      },
       "Libuv/1.10.0": {
         "type": "package",
         "dependencies": {
@@ -7016,6 +7022,18 @@
         "Tools/uninstall.ps1",
         "jquery.3.0.0.nupkg.sha512",
         "jquery.nuspec"
+      ]
+    },
+    "jQuery.Validation/1.17.0": {
+      "sha512": "pzCKw7J9XugWLBCQCPa2qBVS57vbe3OkuEGgbMGWf+66Tyjanyy6qwC9/6Z+tt2PMtkQqNt+BexNDVkTnE8egw==",
+      "type": "package",
+      "path": "jquery.validation/1.17.0",
+      "files": [
+        "Content/Scripts/jquery.validate-vsdoc.js",
+        "Content/Scripts/jquery.validate.js",
+        "Content/Scripts/jquery.validate.min.js",
+        "jquery.validation.1.17.0.nupkg.sha512",
+        "jquery.validation.nuspec"
       ]
     },
     "Libuv/1.10.0": {
@@ -15407,7 +15425,8 @@
       "Microsoft.NETCore.App >= 2.0.0",
       "Microsoft.VisualStudio.Web.CodeGeneration.Design >= 2.0.2",
       "Twitter.Bootstrap >= 3.0.1.1",
-      "bootstrap >= 4.0.0"
+      "bootstrap >= 4.0.0",
+      "jQuery.Validation >= 1.17.0"
     ]
   },
   "packageFolders": {
@@ -15478,6 +15497,10 @@
           "bootstrap": {
             "target": "Package",
             "version": "[4.0.0, )"
+          },
+          "jQuery.Validation": {
+            "target": "Package",
+            "version": "[1.17.0, )"
           }
         },
         "imports": [

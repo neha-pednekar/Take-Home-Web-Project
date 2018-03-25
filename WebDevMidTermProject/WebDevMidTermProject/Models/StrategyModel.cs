@@ -9,6 +9,7 @@ namespace WebDevMidTermProject.Models
 {
     public class StrategyModel
     {
+        [Required]
         [Display(Name = "Strategy Type")]
         public string StrategyType { get; set; }
 
