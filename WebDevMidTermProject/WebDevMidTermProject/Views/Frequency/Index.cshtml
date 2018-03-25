@@ -24,7 +24,7 @@
         @Html.LabelFor(m => m.StrategyModel.StrategyType)
         @Html.DropDownListFor(m => m.StrategyModel.StrategyType, new SelectList(Enum.GetValues(typeof(StrategyTypes))), "",
                                                                               new { @class = "form-control", @style = "width: 400px" })
-        @Html.ValidationMessageFor(m => m.StrategyModel.StrategyType, "Please select a Strategy Type" , new { @style = "color:red"})
+        @Html.ValidationMessageFor(m => m.StrategyModel.StrategyType, "" , new { @style = "color:red"})
     </div>
     <div class="form-group">
         @Html.CheckBoxFor(m => m.DoesTheStringHaveWhitespaces, new { @class = "form-control", @id = "mychkbox1" })
@@ -60,7 +60,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                    <h5 class="modal-title" id="exampleModalLongTitle">Frequency Analysis Table</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -97,7 +97,7 @@
 {
                         <tr>
                             <td scope="row">@(count++)</td>
-                            <td>@bigramData.BigramSequence/td>
+                            <td>@bigramData.BigramSequence</td>
                             <td>@bigramData.NumberOfOccurences</td>
                             <td>@bigramData.Percentage</td>
                         </tr>
@@ -111,7 +111,7 @@
 {
                         <tr>
                             <td scope="row">@(count++)</td>
-                            <td>@trigramData.TrigramSequence/td>
+                            <td>@trigramData.TrigramSequence</td>
                             <td>@trigramData.NumberOfOccurences</td>
                             <td>@trigramData.Percentage</td>
                         </tr>
@@ -124,7 +124,7 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" style="background-color:rgba(0, 188, 140, 1)" data-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>

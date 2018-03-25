@@ -35,7 +35,22 @@ namespace WebDevMidTermProject.Custom_Validations
                     }
                 }
             }
-            return ValidationResult.Success;
+            else if (value != null && (bool)value == false)
+            {
+                if (validationContext.ObjectInstance != null)
+                {
+                    CodeModel codeModel = (CodeModel)validationContext.ObjectInstance;
+                    if (codeModel != null && !String.IsNullOrWhiteSpace(codeModel.InputSecretMessage))
+                    {
+                        if (codeModel.InputSecretMessage.Contains(" "))
+                        {
+                            return new ValidationResult("Please check the Whitespaces checkbox");
+                        }
+
+                    }
+                }
+            }
+                return ValidationResult.Success;
         }
     }
 }
